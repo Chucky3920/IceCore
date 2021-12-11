@@ -1,0 +1,32 @@
+name: IceCore
+version: 0.01-ALPHA
+main: me.iceman3920.icecore.IceCore
+api-version: 1.17
+authors: [ iceman3920 ]
+commands:
+  gamemode:
+    aliases: gm
+
+  gmc:
+    permission: icecore.gamemode.creative
+
+  gms:
+    permission: icecore.gamemode.survival
+  gma:
+    permission: icecore.gamemode.adventure
+  gmsp:
+    permission: icecore.gamemode.spectator
+
+  feed:
+    permission: icecore.feed
+
+  heal:
+    permission: icecore.heal
+
+  fly:
+    permission: icecore.fly
+  vanish:
+    aliases:
+      - v
+      - van
+    permission: icecore.vanish
