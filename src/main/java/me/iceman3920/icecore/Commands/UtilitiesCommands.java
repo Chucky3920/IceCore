@@ -13,6 +13,18 @@ import java.util.ArrayList;
 public class UtilitiesCommands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (command.getName().equalsIgnoreCase("fly")) {
+            this.FlyCommand(sender, command, args);
+        }
+        else if (command.getName().equalsIgnoreCase("heal")) {
+            this.HealFeedCmds(UtilitiesCommands.CommandType.HEAL, sender, args);
+        }
+        else if (command.getName().equalsIgnoreCase("feed")) {
+            this.HealFeedCmds(UtilitiesCommands.CommandType.FEED, sender, args);
+        }
+        else if (command.getName().equalsIgnoreCase("clearchat")) {
+            this.ClearChat(sender, args);
+        }
         return false;
     }
 
@@ -23,20 +35,32 @@ public class UtilitiesCommands implements CommandExecutor {
     }
 
 
-    public void UtilitiesHandler(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
-        if (command.getName().equalsIgnoreCase("fly")) {
-            this.FlyCommand(sender, command, args);
-        }
-        else if (command.getName().equalsIgnoreCase("heal")) {
-            this.HealFeedCmds(UtilitiesCommands.CommandType.HEAL, sender, args);
-        }
-        else if (command.getName().equalsIgnoreCase("feed")) {
-            this.HealFeedCmds(UtilitiesCommands.CommandType.FEED, sender, args);
+    private void ClearChat(CommandSender sender, String[] args) {
+        if(args.length == 0) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (int i = 0; i < 150; i++)
+                {
+
+                    player.sendMessage(" ");
+                }
+            }
+        }else {
+            Player target = Bukkit.getPlayerExact(args[0]);
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Error! Please specify a real player!");
+                return;
+            }
+            for (int i = 0; i < 150; i++)
+            {
+
+                target.sendMessage(" ");
+            }
         }
     }
 
-    private void FlyCommand(final CommandSender sender, final Command command, final String[] args) {
-        final Player player = (Player)sender;
+
+    private void FlyCommand(CommandSender sender,  Command command,  String[] args) {
+         Player player = (Player)sender;
         if (args.length == 0) {
             if (this.list_of_flying_players.contains(player)) {
                 this.list_of_flying_players.remove(player);
@@ -53,7 +77,7 @@ public class UtilitiesCommands implements CommandExecutor {
             if (!player.hasPermission("icecore.fly.others")) {
                 return;
             }
-            final Player target = Bukkit.getPlayerExact(args[0]);
+             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
                 player.sendMessage(ChatColor.RED + "Error! Please specify a real player!");
                 return;
@@ -73,8 +97,8 @@ public class UtilitiesCommands implements CommandExecutor {
         }
     }
 
-    private void HealFeedCmds(final UtilitiesCommands.CommandType commandType, final CommandSender sender, final String[] args) {
-        final Player player = (Player)sender;
+    private void HealFeedCmds(UtilitiesCommands.CommandType commandType,  CommandSender sender,  String[] args) {
+         Player player = (Player)sender;
         if (commandType.equals(UtilitiesCommands.CommandType.FEED) && player.hasPermission("icecore.feed.others")) {
             if (args.length == 0) {
                 player.setFoodLevel(20);
@@ -82,7 +106,7 @@ public class UtilitiesCommands implements CommandExecutor {
                 player.sendMessage(ChatColor.AQUA + "You have now been fed");
             }
             else {
-                final Player target = Bukkit.getPlayerExact(args[0]);
+                 Player target = Bukkit.getPlayerExact(args[0]);
                 if (target == null) {
                     player.sendMessage(ChatColor.RED + "Error! Please specify a real player!");
                     return;
@@ -97,10 +121,10 @@ public class UtilitiesCommands implements CommandExecutor {
             player.setFoodLevel(20);
             player.setSaturation(20.0f);
             player.setHealth(20.0);
-            player.sendMessage(ChatColor.AQUA + "You have now been healed");
+            player.sendMessage(ChatColor.AQUA + "You have been healed");
         }
         else {
-            final Player target = Bukkit.getPlayerExact(args[0]);
+             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
                 player.sendMessage(ChatColor.RED + "Error! Please specify a real player!");
                 return;
@@ -108,10 +132,13 @@ public class UtilitiesCommands implements CommandExecutor {
             target.setFoodLevel(20);
             target.setSaturation(20.0f);
             target.setHealth(20.0);
-            target.sendMessage(ChatColor.AQUA + "You have now been healed");
-            player.sendMessage(ChatColor.DARK_AQUA + target.getName() + " Has now been healed");
+            target.sendMessage(ChatColor.AQUA + "You have been healed");
+            player.sendMessage(ChatColor.DARK_AQUA + target.getName() + " Has been healed");
         }
     }
+
+
+
     enum CommandType {HEAL,FEED}
 }
 

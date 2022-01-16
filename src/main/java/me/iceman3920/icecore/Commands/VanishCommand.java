@@ -12,37 +12,37 @@ import org.jetbrains.annotations.NotNull;
 public class VanishCommand implements CommandExecutor {
     IceCore iceCore;
 
-    public VanishCommand(final IceCore iceCore) {
+    public VanishCommand(IceCore iceCore) {
         this.iceCore = iceCore;
     }
 
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("vanish")) {
             this.VanishCmd(sender, args, command);
         }
-        return true;
+        return false;
     }
 
-    public void VanishCmd(final CommandSender sender, final String[] args, final Command command) {
+    public void VanishCmd(CommandSender sender, String[] args, Command command) {
         if (sender instanceof Player) {
-            final Player player = (Player)sender;
+              Player player = (Player)sender;
             if (this.iceCore.invisible_players.contains(player)) {
                 this.iceCore.invisible_players.remove(player);
-                player.sendMessage(ChatColor.AQUA + "You are now " + ChatColor.DARK_AQUA + "Visible");
-                for (final Player people : Bukkit.getOnlinePlayers()) {
+                player.sendMessage(IceCore.PREFIX + ChatColor.AQUA + "You are now " + ChatColor.DARK_AQUA + "Visible");
+                for (Player people : Bukkit.getOnlinePlayers()) {
                     if (!people.hasPermission("icecore.vanish.bypass")) {
                         people.showPlayer(this.iceCore, player);
                     }
                 }
             }
             else {
-                for (final Player people : Bukkit.getOnlinePlayers()) {
+                for (Player people : Bukkit.getOnlinePlayers()) {
                     if (!people.hasPermission("icecore.vanish.bypass")) {
                         people.hidePlayer(this.iceCore, player);
                     }
                 }
                 this.iceCore.invisible_players.add(player);
-                player.sendMessage(ChatColor.AQUA + "You are now " + ChatColor.DARK_AQUA + "Invisible");
+                player.sendMessage(IceCore.PREFIX + ChatColor.AQUA + "You are now " + ChatColor.DARK_AQUA + "Invisible");
             }
         }
     }

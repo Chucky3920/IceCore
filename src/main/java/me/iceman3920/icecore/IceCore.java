@@ -1,50 +1,93 @@
 package me.iceman3920.icecore;
 
-import me.iceman3920.icecore.Commands.UtilitiesCommands;
-import me.iceman3920.icecore.Commands.VanishCommand;
-import me.iceman3920.icecore.Events.JoinEvent;
-import org.bukkit.Bukkit;
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
+import me.iceman3920.icecore.Commands.*;
+import me.iceman3920.icecore.Events.*;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public final class IceCore extends JavaPlugin {
 
-    public static final String PREFIX = "[&l&bIceCore&r] ";
-    FileConfiguration config;
-    List<String> motd;
+    public static final String PREFIX = Color("&f[&b&lIce&6&lCore&r&f] ");
+    public ArrayList<Player> god_players;
+    public static ArrayList<Player> staff_chat_players_list;
     public ArrayList<Player> invisible_players;
+    public ArrayList<Player> ore_tracker;
+    FileConfiguration config;
+    WebhookClient client;
+
 
     public IceCore() {
         this.config = this.getConfig();
         this.invisible_players = new ArrayList<Player>();
+        staff_chat_players_list = new ArrayList<Player>();
+        this.god_players = new ArrayList<Player>();
+        this.ore_tracker = new ArrayList<Player>();
     }
+
+
 
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents((Listener)new JoinEvent(this), (Plugin)this);
+        WebhookClientBuilder builder = new WebhookClientBuilder("https://discord.com/api/webhooks/926594417677176912/3ncgkr6HOmkc9eNmxDUJu8EVCz0A2pTbyKUnjbB8SYJ3a0MWmaZA-C0ju93JwA5ocpOG"); // or id, token
+        builder.setThreadFactory((job) -> {
+            Thread thread = new Thread(job);
+            thread.setName("Hello");
+            thread.setDaemon(true);
+            return thread;
+        });
+        builder.setWait(true);
+        client = builder.build();
+        //client.send("Yeet");
+
+
+        getServer().getPluginManager().registerEvents(new JoinEvent(this), this);
+        getServer().getPluginManager().registerEvents(new MessageSentEvent(this), this);
+        getServer().getPluginManager().registerEvents(new CommandProcessEvent(this), this);
+        getServer().getPluginManager().registerEvents(new EntityHurtEvent(this), this);
+        getServer().getPluginManager().registerEvents(new BlockBrokenEvent(this), this);
+
+
         this.saveDefaultConfig();
-        Objects.requireNonNull(this.getCommand("fly")).setExecutor(new UtilitiesCommands());
-        Objects.requireNonNull(this.getCommand("vanish")).setExecutor(new VanishCommand(this));
+        this.getCommand("fly").setExecutor(new UtilitiesCommands());
+        this.getCommand("heal").setExecutor(new UtilitiesCommands());
+        this.getCommand("feed").setExecutor(new UtilitiesCommands());
+        this.getCommand("clearchat").setExecutor(new UtilitiesCommands());
+        this.getCommand("oretracker").setExecutor(new OreTrackerCommand(this));
+
+        this.getCommand("godmode").setExecutor(new GodModeCommand(this));
+        this.getCommand("shutdown").setExecutor(new ShutDownCommand(this));
+
+
+        this.getCommand("vanish").setExecutor(new VanishCommand(this));
+        this.getCommand("staffchat").setExecutor(new StaffChat(this));
+
+
+        this.getCommand("gamemode").setExecutor(new GamemodeCommand(this));
+        this.getCommand("gmc").setExecutor(new GamemodeCommand(this));
+        this.getCommand("gms").setExecutor(new GamemodeCommand(this));
+        this.getCommand("gmsp").setExecutor(new GamemodeCommand(this));
+        this.getCommand("gma").setExecutor(new GamemodeCommand(this));
+
+
+    }
+
+    public void onDisable() {
+
     }
 
 
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
-        return super.onCommand(sender, command, label, args);
+    public WebhookClient getClient() {
+        return this.client;
     }
 
-    public FileConfiguration getConfigFile() {
-        return this.config;
+    private static String Color(String s) {
+        s = ChatColor.translateAlternateColorCodes('&', s);
+        return s;
     }
 }
 
